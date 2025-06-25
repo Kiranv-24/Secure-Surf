@@ -1,14 +1,9 @@
 
 import React from 'react'
 import PhishingDetector from './components/PhishingDetector'
-import './App.css'
 
 function App() {
-  return (
-    <div className="App">
-      <PhishingDetector />
-    </div>
-  )
+  return <PhishingDetector />
 }
 
 export default App
