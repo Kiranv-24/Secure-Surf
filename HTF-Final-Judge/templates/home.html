@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -53,14 +54,43 @@
                 </table>
             </div>
         </div>
+
+        <!-- RESULT CONTAINER -->
+        <div id="result-container" style="display: none; margin-top: 40px; padding: 20px; text-align: center;">
+            <div id="result-message" style="padding: 20px; border-radius: 15px; font-size: 18px; font-weight: bold; margin-bottom: 20px;"></div>
+            <div id="result-details" style="background: linear-gradient(170deg, rgba(43, 86, 244, 0.8), rgba(219, 81, 196, 0.8)); padding: 20px; border-radius: 15px; display: none;">
+                <h3 style="color: white; margin-bottom: 20px; font-size: 25px;">Detailed Analysis</h3>
+                <table id="details-table" style="width: 100%; border-collapse: separate; border-spacing: 0; border-radius: 18px; overflow: hidden; background-color: rgba(255, 255, 255, 0.1);">
+                    <thead>
+                        <tr style="background-color: #5d6dff;">
+                            <th style="padding: 12px; text-align: left; color: white;">Property</th>
+                            <th style="padding: 12px; text-align: left; color: white;">Value</th>
+                        </tr>
+                    </thead>
+                    <tbody id="details-tbody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     <!-- JS to send JSON -->
     <script>
         document.getElementById("url-form").addEventListener("submit", function(event) {
-            event.preventDefault(); // prevent regular form submit
+            event.preventDefault();
 
             const urlInput = document.getElementById("user-input").value;
+            const resultContainer = document.getElementById("result-container");
+            const resultMessage = document.getElementById("result-message");
+            const resultDetails = document.getElementById("result-details");
+            const detailsTbody = document.getElementById("details-tbody");
+
+            // Show loading state
+            resultContainer.style.display = "block";
+            resultMessage.textContent = "Analyzing URL...";
+            resultMessage.style.backgroundColor = "#555";
+            resultMessage.style.color = "white";
+            resultDetails.style.display = "none";
 
             fetch("/check_phishing", {
                 method: "POST",
@@ -70,14 +100,71 @@
                 body: JSON.stringify({ url: urlInput })
             })
             .then(response => {
-                if (!response.ok) throw new Error("Network response was not ok");
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
                 return response.json();
             })
             .then(data => {
-                alert("Server Response: " + data.message);
+                console.log("Server Response:", data);
+                
+                // Display main result
+                if (data.result_text) {
+                    resultMessage.textContent = data.result_text;
+                    
+                    // Set color based on result
+                    if (data.result_text.toLowerCase().includes('phishing')) {
+                        resultMessage.style.backgroundColor = "#ff4444";
+                        resultMessage.style.color = "white";
+                    } else if (data.result_text.toLowerCase().includes('legitimate')) {
+                        resultMessage.style.backgroundColor = "#44ff44";
+                        resultMessage.style.color = "black";
+                    } else {
+                        resultMessage.style.backgroundColor = "#ffaa44";
+                        resultMessage.style.color = "black";
+                    }
+                } else {
+                    resultMessage.textContent = data.message || "Analysis complete";
+                    resultMessage.style.backgroundColor = "#555";
+                    resultMessage.style.color = "white";
+                }
+
+                // Display additional info if available
+                if (data.additional_info && Object.keys(data.additional_info).length > 0) {
+                    detailsTbody.innerHTML = '';
+                    let index = 0;
+                    
+                    for (const [key, value] of Object.entries(data.additional_info)) {
+                        const row = document.createElement('tr');
+                        row.style.backgroundColor = index % 2 === 0 ? 'rgba(255, 255, 255, 0.1)' : 'transparent';
+                        
+                        const keyCell = document.createElement('td');
+                        keyCell.style.padding = '8px';
+                        keyCell.style.color = 'white';
+                        keyCell.style.fontWeight = 'bold';
+                        keyCell.textContent = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                        
+                        const valueCell = document.createElement('td');
+                        valueCell.style.padding = '8px';
+                        valueCell.style.color = 'white';
+                        valueCell.textContent = value || 'N/A';
+                        
+                        row.appendChild(keyCell);
+                        row.appendChild(valueCell);
+                        detailsTbody.appendChild(row);
+                        
+                        index++;
+                    }
+                    
+                    resultDetails.style.display = "block";
+                }
             })
             .catch(error => {
-                alert("Error: " + error.message);
+                console.error("Error:", error);
+                resultMessage.textContent = `Error: ${error.message}`;
+                resultMessage.style.backgroundColor = "#ff4444";
+                resultMessage.style.color = "white";
+                resultDetails.style.display = "none";
             });
         });
     </script>
