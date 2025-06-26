@@ -1,0 +1,11 @@
+Flask
+flask-cors
+requests
+beautifulsoup4
+pandas
+numpy
+scikit-learn
+matplotlib
+seaborn
+scikit-posthocs
+joblib
