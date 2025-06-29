@@ -9,6 +9,23 @@
   padding: 0;
   box-sizing: border-box;
 }
+/* styles.css or tailwind.css */
+.progress-bar {
+  width: var(--progress-width);
+}
+/* styles.css */
+.background-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+}
+.grid-background {
+  background-image:
+    linear-gradient(rgba(0, 255, 65, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 65, 0.1) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
 
 :root {
   font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
