@@ -1,0 +1,2 @@
+https://malicious-site.com - yes
+https://google.com - no

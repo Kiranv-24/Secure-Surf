@@ -1,0 +1,8 @@
+# Example input file for batch testing
+# Format: url - yes/no (yes=phishing, no=legitimate)
+# Or just: url (for unlabeled testing)
+
+https://google.com - no
+https://facebook.com - no
+https://suspicious-phishing-site.com - yes
+https://github.com
