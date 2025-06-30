@@ -9,7 +9,7 @@ from datetime import datetime
 import traceback
 
 # Load the trained model
-model_path = "best_rf_model.joblib"
+model_path = r"C:\Users\Darshan.v\OneDrive\Desktop\HTF-Final-Judge 2\HTF-Final-Judge\best_rf_model.joblib"
 
 if not os.path.exists(model_path):
     raise FileNotFoundError(f"Model file not found: {model_path}")

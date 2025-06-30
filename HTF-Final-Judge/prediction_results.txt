@@ -1,27 +1,27 @@
 PHISHING DETECTION BATCH TEST RESULTS
 ==================================================
-Test Date: 2025-06-29 21:53:13
+Test Date: 2025-06-30 23:47:39
 Input File: test_urls.txt
-Model Used: best_rf_model.joblib
+Model Used: C:\Users\Darshan.v\OneDrive\Desktop\HTF-Final-Judge 2\HTF-Final-Judge\best_rf_model.joblib
 
 ACCURACY SUMMARY
 --------------------
-Total URLs: 4
-Successful Predictions: 3
-Errors: 1
-Labeled URLs: 2
-Correct Predictions: 2
-Accuracy: 100.00%
-Precision: 0.00%
-Recall: 0.00%
-F1-Score: 0.00%
+Total URLs: 85
+Successful Predictions: 70
+Errors: 15
+Labeled URLs: 70
+Correct Predictions: 68
+Accuracy: 97.14%
+Precision: 100.00%
+Recall: 91.30%
+F1-Score: 95.45%
 
 CONFUSION MATRIX
 ----------------
-True Positives: 0
+True Positives: 21
 False Positives: 0
-True Negatives: 2
-False Negatives: 0
+True Negatives: 47
+False Negatives: 2
 
 DETAILED RESULTS
 ----------------
@@ -29,9 +29,104 @@ URL                                                Predicted  Actual   Confidenc
 ----------------------------------------------------------------------------------------------------
 https://google.com                                 no         no       85.5%        success   
 https://facebook.com                               no         no       78.7%        success   
-https://suspicious-phishing-site.com               error      yes      N/A          error     
-    Error: Cannot connect to URL: HTTPSConnectionPool(host='suspicious-phishing-site.com', port=443): Max retries exceeded with url: / (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000025437D93750>: Failed to resolve 'suspicious-phishing-site.com' ([Errno 11001] getaddrinfo failed)"))
-https://github.com                                 no         N/A      85.0%        success   
+https://facebook.com                               no         no       78.7%        success   
+https://github.com                                 no         no       85.0%        success   
+https://microsoft.com                              no         no       81.5%        success   
+https://apple.com                                  no         no       89.5%        success   
+https://linkedin.com                               no         no       89.0%        success   
+https://youtube.com                                no         no       73.5%        success   
+https://wikipedia.org                              no         no       93.5%        success   
+http://bradanetempresa.za.com/                     yes        yes      99.0%        success   
+https://aiqualityservices.com                      yes        yes      68.0%        success   
+https://app.synaspeprotocol.com/                   yes        yes      96.5%        success   
+https://arezzoutlet.shop/                          yes        yes      59.0%        success   
+https://clearoutdealsworld.com/login               yes        yes      74.0%        success   
+https://compound-platform.eu/                      yes        yes      74.0%        success   
+https://liquiddb.com                               yes        yes      70.5%        success   
+https://interbenfit.solicitudservicio.click/       error      yes      N/A          error     
+    Error: Cannot connect to URL: 403 Client Error: Forbidden for url: https://interbenfit.solicitudservicio.click/
+http://evrigbdeliver.today                         error      yes      N/A          error     
+    Error: Cannot connect to URL: HTTPConnectionPool(host='evrigbdeliver.today', port=80): Max retries exceeded with url: / (Caused by NameResolutionError("<urllib3.connection.HTTPConnection object at 0x00000226B9017CE0>: Failed to resolve 'evrigbdeliver.today' ([Errno 11001] getaddrinfo failed)"))
+http://evri-delivery4.today                        error      yes      N/A          error     
+    Error: Cannot connect to URL: 404 Client Error: Not Found for url: https://evri-delivery4.today/
+https://reducaodetaxapag.top/pf/pj/index.php       yes        yes      75.0%        success   
+https://chicken777road.biz/                        yes        yes      83.5%        success   
+https://wisejackpot.com/                           yes        yes      67.0%        success   
+https://arraiadanaturabrasil.site/                 error      yes      N/A          error     
+    Error: Cannot connect to URL: HTTPSConnectionPool(host='arraiadanaturabrasil.site', port=443): Max retries exceeded with url: / (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x00000226B9022E90>: Failed to resolve 'arraiadanaturabrasil.site' ([Errno 11001] getaddrinfo failed)"))
+http://c0nnect-trez0rsuite.us/                     yes        yes      64.5%        success   
+https://vanguardlogin-usa.us/                      error      yes      N/A          error     
+    Error: Cannot connect to URL: 406 Client Error: Not Acceptable for url: https://vanguardlogin-usa.us/
+http://vanguardlogin-usa.us/                       error      yes      N/A          error     
+    Error: Cannot connect to URL: 406 Client Error: Not Acceptable for url: http://vanguardlogin-usa.us/
+https://sovryn.live/                               no         yes      60.5%        success   
+https://travel.mastervip.com.tw/                   error      yes      N/A          error     
+    Error: Cannot connect to URL: 404 Client Error: Not Found for url: https://travel.mastervip.com.tw/
+http://dbs.mastervip.com.tw?entity=31321           error      yes      N/A          error     
+    Error: Cannot connect to URL: 404 Client Error: Not Found for url: http://dbs.mastervip.com.tw/?entity=31321
+https://hyperliquidcrypto.org/                     yes        yes      67.0%        success   
+https://hyperliquides.org/                         yes        yes      61.5%        success   
+https://netflix.com                                no         no       82.0%        success   
+https://spotify.com                                no         no       89.5%        success   
+https://dropbox.com                                no         no       91.5%        success   
+https://slack.com                                  no         no       99.0%        success   
+https://adobe.com                                  no         no       81.5%        success   
+https://mozilla.org                                no         no       90.0%        success   
+https://stackoverflow.com                          no         no       92.0%        success   
+https://quora.com                                  no         no       86.5%        success   
+https://nytimes.com                                no         no       96.5%        success   
+https://cnn.com                                    no         no       94.0%        success   
+https://bbc.com                                    no         no       96.5%        success   
+https://zoom.us                                    no         no       88.0%        success   
+https://airbnb.com                                 no         no       87.0%        success   
+https://booking.com                                no         no       92.0%        success   
+https://coursera.org                               no         no       95.5%        success   
+https://edx.org                                    no         no       89.5%        success   
+https://khanacademy.org                            no         no       92.5%        success   
+https://cloudflare.com                             no         no       97.5%        success   
+https://paypal.com                                 no         no       83.5%        success   
+https://udemy.com                                  no         no       80.2%        success   
+https://cedaro-bitflow.com/                        yes        yes      70.5%        success   
+https://mbproof.top/                               yes        yes      60.0%        success   
+https://b14g-restaking.finance/                    yes        yes      74.0%        success   
+https://promocionstori.com/                        yes        yes      66.5%        success   
+https://maya-protocol.net/                         yes        yes      63.5%        success   
+https://web3connectvaults.com/connect/wallet       error      yes      N/A          error     
+    Error: Cannot connect to URL: HTTPSConnectionPool(host='web3connectvaults.com', port=443): Max retries exceeded with url: /connect/wallet (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x00000226CC4907D0>: Failed to resolve 'web3connectvaults.com' ([Errno 11002] getaddrinfo failed)"))
+https://adjumendes.online/                         error      yes      N/A          error     
+    Error: Cannot connect to URL: HTTPSConnectionPool(host='adjumendes.online', port=443): Max retries exceeded with url: / (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x00000226CC490910>: Failed to resolve 'adjumendes.online' ([Errno 11001] getaddrinfo failed)"))
+http://evri-portal-help.com                        error      yes      N/A          error     
+    Error: Cannot connect to URL: 406 Client Error: Not Acceptable for url: http://evri-portal-help.com/
+http://evri-delivery5.today                        error      yes      N/A          error     
+    Error: Cannot connect to URL: 404 Client Error: Not Found for url: https://evri-delivery5.today/
+https://thenaflnonce.org/                          yes        yes      73.5%        success   
+https://web3vaultnetwork.com/connect/wallet        yes        yes      66.5%        success   
+http://evrim-kuran.com                             yes        yes      83.0%        success   
+https://tracklintas.com/procced                    no         yes      54.0%        success   
+https://www.validaracessopg.ru.com/login.php       error      yes      N/A          error     
+    Error: Cannot connect to URL: HTTPSConnectionPool(host='validaracessopg.ru.com', port=443): Max retries exceeded with url: /login.php (Caused by SSLError(SSLError(1, '[SSL: TLSV1_UNRECOGNIZED_NAME] tlsv1 unrecognized name (_ssl.c:1028)')))
+https://ibm.com                                    no         no       85.5%        success   
+https://intel.com                                  no         no       82.0%        success   
+https://nvidia.com                                 no         no       95.5%        success   
+https://www.oracle.com                             error      no       N/A          error     
+    Error: Cannot connect to URL: 403 Client Error: Forbidden for url: https://www.oracle.com/
+https://salesforce.com                             no         no       87.0%        success   
+https://www.tesla.com                              error      no       N/A          error     
+    Error: Cannot connect to URL: HTTPSConnectionPool(host='tesla.com', port=443): Read timed out. (read timeout=10)
+https://adobe.com                                  no         no       83.0%        success   
+https://airbnb.com                                 no         no       87.0%        success   
+https://booking.com                                no         no       92.0%        success   
+https://dropbox.com                                no         no       91.5%        success   
+https://cloudflare.com                             no         no       97.5%        success   
+https://paypal.com                                 no         no       83.5%        success   
+https://udemy.com                                  no         no       80.2%        success   
+https://coursera.org                               no         no       95.5%        success   
+https://khanacademy.org                            no         no       92.5%        success   
+https://edx.org                                    no         no       89.5%        success   
+https://spotify.com                                no         no       89.5%        success   
+https://twitch.tv                                  no         no       84.0%        success   
+https://reddit.com                                 no         no       87.0%        success   
+https://medium.com                                 no         no       81.5%        success   
 
 ==================================================
 END OF REPORT
