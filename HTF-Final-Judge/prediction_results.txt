@@ -46,24 +46,13 @@ https://liquiddb.com                               yes        yes      70.5%    
 https://interbenfit.solicitudservicio.click/       error      yes      N/A          error     
     Error: Cannot connect to URL: 403 Client Error: Forbidden for url: https://interbenfit.solicitudservicio.click/
 http://evrigbdeliver.today                         error      yes      N/A          error     
-    Error: Cannot connect to URL: HTTPConnectionPool(host='evrigbdeliver.today', port=80): Max retries exceeded with url: / (Caused by NameResolutionError("<urllib3.connection.HTTPConnection object at 0x00000226B9017CE0>: Failed to resolve 'evrigbdeliver.today' ([Errno 11001] getaddrinfo failed)"))
 http://evri-delivery4.today                        error      yes      N/A          error     
-    Error: Cannot connect to URL: 404 Client Error: Not Found for url: https://evri-delivery4.today/
 https://reducaodetaxapag.top/pf/pj/index.php       yes        yes      75.0%        success   
 https://chicken777road.biz/                        yes        yes      83.5%        success   
 https://wisejackpot.com/                           yes        yes      67.0%        success   
 https://arraiadanaturabrasil.site/                 error      yes      N/A          error     
-    Error: Cannot connect to URL: HTTPSConnectionPool(host='arraiadanaturabrasil.site', port=443): Max retries exceeded with url: / (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x00000226B9022E90>: Failed to resolve 'arraiadanaturabrasil.site' ([Errno 11001] getaddrinfo failed)"))
 http://c0nnect-trez0rsuite.us/                     yes        yes      64.5%        success   
 https://vanguardlogin-usa.us/                      error      yes      N/A          error     
-    Error: Cannot connect to URL: 406 Client Error: Not Acceptable for url: https://vanguardlogin-usa.us/
-http://vanguardlogin-usa.us/                       error      yes      N/A          error     
-    Error: Cannot connect to URL: 406 Client Error: Not Acceptable for url: http://vanguardlogin-usa.us/
-https://sovryn.live/                               no         yes      60.5%        success   
-https://travel.mastervip.com.tw/                   error      yes      N/A          error     
-    Error: Cannot connect to URL: 404 Client Error: Not Found for url: https://travel.mastervip.com.tw/
-http://dbs.mastervip.com.tw?entity=31321           error      yes      N/A          error     
-    Error: Cannot connect to URL: 404 Client Error: Not Found for url: http://dbs.mastervip.com.tw/?entity=31321
 https://hyperliquidcrypto.org/                     yes        yes      67.0%        success   
 https://hyperliquides.org/                         yes        yes      61.5%        success   
 https://netflix.com                                no         no       82.0%        success   
@@ -92,27 +81,17 @@ https://b14g-restaking.finance/                    yes        yes      74.0%    
 https://promocionstori.com/                        yes        yes      66.5%        success   
 https://maya-protocol.net/                         yes        yes      63.5%        success   
 https://web3connectvaults.com/connect/wallet       error      yes      N/A          error     
-    Error: Cannot connect to URL: HTTPSConnectionPool(host='web3connectvaults.com', port=443): Max retries exceeded with url: /connect/wallet (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x00000226CC4907D0>: Failed to resolve 'web3connectvaults.com' ([Errno 11002] getaddrinfo failed)"))
-https://adjumendes.online/                         error      yes      N/A          error     
-    Error: Cannot connect to URL: HTTPSConnectionPool(host='adjumendes.online', port=443): Max retries exceeded with url: / (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x00000226CC490910>: Failed to resolve 'adjumendes.online' ([Errno 11001] getaddrinfo failed)"))
-http://evri-portal-help.com                        error      yes      N/A          error     
-    Error: Cannot connect to URL: 406 Client Error: Not Acceptable for url: http://evri-portal-help.com/
-http://evri-delivery5.today                        error      yes      N/A          error     
-    Error: Cannot connect to URL: 404 Client Error: Not Found for url: https://evri-delivery5.today/
 https://thenaflnonce.org/                          yes        yes      73.5%        success   
 https://web3vaultnetwork.com/connect/wallet        yes        yes      66.5%        success   
 http://evrim-kuran.com                             yes        yes      83.0%        success   
 https://tracklintas.com/procced                    no         yes      54.0%        success   
 https://www.validaracessopg.ru.com/login.php       error      yes      N/A          error     
-    Error: Cannot connect to URL: HTTPSConnectionPool(host='validaracessopg.ru.com', port=443): Max retries exceeded with url: /login.php (Caused by SSLError(SSLError(1, '[SSL: TLSV1_UNRECOGNIZED_NAME] tlsv1 unrecognized name (_ssl.c:1028)')))
 https://ibm.com                                    no         no       85.5%        success   
 https://intel.com                                  no         no       82.0%        success   
 https://nvidia.com                                 no         no       95.5%        success   
 https://www.oracle.com                             error      no       N/A          error     
-    Error: Cannot connect to URL: 403 Client Error: Forbidden for url: https://www.oracle.com/
 https://salesforce.com                             no         no       87.0%        success   
 https://www.tesla.com                              error      no       N/A          error     
-    Error: Cannot connect to URL: HTTPSConnectionPool(host='tesla.com', port=443): Read timed out. (read timeout=10)
 https://adobe.com                                  no         no       83.0%        success   
 https://airbnb.com                                 no         no       87.0%        success   
 https://booking.com                                no         no       92.0%        success   
