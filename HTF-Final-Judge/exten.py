@@ -15,13 +15,15 @@ if not os.path.exists(model_path):
 model = joblib.load(model_path)
 
 def create_session_with_retry():
-    """Create a requests session with retry strategy"""
+    """Create a requests session with enhanced retry strategy"""
     session = requests.Session()
     retry_strategy = Retry(
         total=2,
         status_forcelist=[429, 500, 502, 503, 504],
         method_whitelist=["HEAD", "GET", "OPTIONS"],
-        backoff_factor=1
+        backoff_factor=1,
+        raise_on_redirect=False,
+        raise_on_status=False
     )
     adapter = HTTPAdapter(max_retries=retry_strategy)
     session.mount("http://", adapter)
@@ -40,24 +42,52 @@ def preprocess_url(domain):
     return domain
 
 def fetch_url_content(url):
-    """Enhanced URL fetching with better error handling"""
+    """Enhanced URL fetching with comprehensive error handling"""
     session = create_session_with_retry()
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
     }
     
     try:
-        response = session.get(url, timeout=10, headers=headers, verify=False)
-        response.raise_for_status()
+        # Handle redirects manually to avoid infinite loops
+        response = session.get(url, timeout=10, headers=headers, verify=False, allow_redirects=False)
+        
+        redirect_count = 0
+        max_redirects = 5
+        
+        while response.status_code in [301, 302, 303, 307, 308] and redirect_count < max_redirects:
+            redirect_url = response.headers.get('Location')
+            if not redirect_url:
+                break
+            
+            if redirect_url.startswith('/'):
+                from urllib.parse import urljoin
+                redirect_url = urljoin(url, redirect_url)
+            
+            response = session.get(redirect_url, timeout=10, headers=headers, verify=False, allow_redirects=False)
+            redirect_count += 1
+            url = redirect_url
+        
+        if redirect_count >= max_redirects:
+            raise ConnectionError("Redirect loop detected")
+        
+        if response.status_code == 404:
+            raise ConnectionError("Page not found (404)")
+        elif response.status_code == 403:
+            raise ConnectionError("Access forbidden (403)")
+        elif response.status_code >= 400:
+            raise ConnectionError(f"HTTP {response.status_code} error")
+        
         return response
+        
     except requests.exceptions.Timeout:
         raise ConnectionError("Request timeout")
     except requests.exceptions.ConnectionError as e:
-        if "getaddrinfo failed" in str(e):
+        if "getaddrinfo failed" in str(e) or "failed to resolve" in str(e):
             raise ConnectionError("Domain not found")
         raise ConnectionError(f"Connection failed: {str(e)}")
-    except requests.exceptions.HTTPError as e:
-        raise ConnectionError(f"HTTP {e.response.status_code}: Access denied")
+    except requests.exceptions.TooManyRedirects:
+        raise ConnectionError("Too many redirects")
     except Exception as e:
         raise ConnectionError(f"Connection error: {str(e)}")
 
@@ -110,8 +140,8 @@ def process_url_input(domain_input):
             
         except ConnectionError as e:
             return {
-                "result_text": f"⚠️ Connection Failed: {str(e)} - Unable to perform full analysis",
-                "additional_info": {"warning": "Limited analysis due to connection failure"}
+                "result_text": f"⚠️ Connection Failed: {str(e)} - Limited analysis performed",
+                "additional_info": {"warning": "Domain-only analysis due to connection failure"}
             }
 
     except Exception as e:

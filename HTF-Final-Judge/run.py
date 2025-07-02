@@ -8,6 +8,7 @@ import result as ress
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 import socket
+import time
 
 model_path = r"C:\Users\Darshan.v\OneDrive\Desktop\HTF-Final-Judge 2\HTF-Final-Judge\best_rf_model.joblib"
 
@@ -16,13 +17,15 @@ if not os.path.exists(model_path):
 model = joblib.load(model_path)
 
 def create_session_with_retry():
-    """Create a requests session with retry strategy"""
+    """Create a requests session with enhanced retry strategy"""
     session = requests.Session()
     retry_strategy = Retry(
-        total=3,
+        total=2,
         status_forcelist=[429, 500, 502, 503, 504],
         method_whitelist=["HEAD", "GET", "OPTIONS"],
-        backoff_factor=1
+        backoff_factor=1,
+        raise_on_redirect=False,
+        raise_on_status=False
     )
     adapter = HTTPAdapter(max_retries=retry_strategy)
     session.mount("http://", adapter)
@@ -41,7 +44,7 @@ def preprocess_url(domain):
     return domain
 
 def fetch_url_content(url):
-    """Enhanced URL fetching with better error handling"""
+    """Enhanced URL fetching with comprehensive error handling"""
     session = create_session_with_retry()
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
@@ -53,36 +56,60 @@ def fetch_url_content(url):
     }
     
     try:
-        # First try the original URL
-        response = session.get(url, timeout=15, headers=headers, verify=False, allow_redirects=True)
-        response.raise_for_status()
+        # Try with allow_redirects=False first to handle redirect loops
+        response = session.get(url, timeout=10, headers=headers, verify=False, allow_redirects=False)
+        
+        # Handle redirects manually to avoid infinite loops
+        redirect_count = 0
+        max_redirects = 5
+        
+        while response.status_code in [301, 302, 303, 307, 308] and redirect_count < max_redirects:
+            redirect_url = response.headers.get('Location')
+            if not redirect_url:
+                break
+            
+            # Handle relative redirects
+            if redirect_url.startswith('/'):
+                from urllib.parse import urljoin
+                redirect_url = urljoin(url, redirect_url)
+            
+            response = session.get(redirect_url, timeout=10, headers=headers, verify=False, allow_redirects=False)
+            redirect_count += 1
+            url = redirect_url
+        
+        if redirect_count >= max_redirects:
+            raise ConnectionError("Too many redirects - possible redirect loop detected")
+        
+        # Check final response status
+        if response.status_code == 404:
+            raise ConnectionError("Page not found (404) - This URL may not exist or has been removed")
+        elif response.status_code == 403:
+            raise ConnectionError("Access forbidden (403) - The website is blocking automated requests")
+        elif response.status_code == 429:
+            raise ConnectionError("Rate limited (429) - Too many requests to this website")
+        elif response.status_code >= 400:
+            raise ConnectionError(f"HTTP {response.status_code} error - Server returned an error response")
+        
         return response
-    except requests.exceptions.SSLError:
-        # If SSL fails, try without SSL verification
-        try:
-            response = session.get(url, timeout=15, headers=headers, verify=False, allow_redirects=True)
-            response.raise_for_status()
-            return response
-        except Exception as e:
-            raise ConnectionError(f"SSL and non-SSL connection failed: {str(e)}")
+        
+    except requests.exceptions.SSLError as e:
+        raise ConnectionError(f"SSL certificate error - The website's security certificate is invalid: {str(e)}")
     except requests.exceptions.Timeout:
-        raise ConnectionError("Request timeout - the website is taking too long to respond")
+        raise ConnectionError("Connection timeout - The website is taking too long to respond (>10 seconds)")
     except requests.exceptions.ConnectionError as e:
-        if "Name or service not known" in str(e) or "getaddrinfo failed" in str(e):
-            raise ConnectionError("Domain not found - this website may not exist or may be offline")
+        error_str = str(e).lower()
+        if "name or service not known" in error_str or "getaddrinfo failed" in error_str or "failed to resolve" in error_str:
+            raise ConnectionError("Domain not found - This website may not exist, be offline, or the domain may be invalid")
+        elif "connection refused" in error_str:
+            raise ConnectionError("Connection refused - The website server is not accepting connections")
+        elif "max retries exceeded" in error_str:
+            raise ConnectionError("Connection failed after multiple attempts - The website may be temporarily unavailable")
         else:
-            raise ConnectionError(f"Connection failed: {str(e)}")
-    except requests.exceptions.HTTPError as e:
-        if e.response.status_code == 403:
-            raise ConnectionError("Access forbidden - the website is blocking automated requests")
-        elif e.response.status_code == 404:
-            raise ConnectionError("Page not found - this URL may not exist")
-        elif e.response.status_code == 429:
-            raise ConnectionError("Too many requests - the website is rate limiting")
-        else:
-            raise ConnectionError(f"HTTP error {e.response.status_code}: {str(e)}")
+            raise ConnectionError(f"Network connection failed: {str(e)}")
+    except requests.exceptions.TooManyRedirects:
+        raise ConnectionError("Too many redirects - The website has a redirect loop")
     except Exception as e:
-        raise ConnectionError(f"Unexpected error: {str(e)}")
+        raise ConnectionError(f"Unexpected connection error: {str(e)}")
 
 def extract_features(domain):
     try:
@@ -107,51 +134,76 @@ def predict_phishing(features):
         raise ValueError(f"Prediction error: {str(e)}")
 
 def analyze_url_without_connection(domain_input):
-    """Analyze URL using only domain-based features when connection fails"""
+    """Enhanced domain-only analysis when connection fails"""
     try:
         cleaned_domain = preprocess_url(domain_input)
         domain = ress._url_domain(cleaned_domain)
         
         # Extract basic domain features that don't require website access
-        basic_features = {
-            "domain": str(domain),
-            "Domain Age": str(ress.domain_age(domain)),
-            "num_sub_domains": str(ress.number_of_subdomains(cleaned_domain)), 
-            "domain_reg_length": str(ress.domain_registration_length(domain)),  
-            "ip_counts": str(ress.get_ip_count(domain)), 
-            "ssl_update_age(In Days)": str(ress.get_ssl_update_age(domain)),  
-            "num_smtp_servers": str(ress.number_of_smtp_servers(domain.removeprefix("www."))),
-            "has_ip": str(ress.has_ip(domain))
-        }
+        try:
+            basic_features = {
+                "domain": str(domain),
+                "Domain Age": str(ress.domain_age(domain)),
+                "num_sub_domains": str(ress.number_of_subdomains(cleaned_domain)), 
+                "domain_reg_length": str(ress.domain_registration_length(domain)),  
+                "ip_counts": str(ress.get_ip_count(domain)), 
+                "ssl_update_age(In Days)": str(ress.get_ssl_update_age(domain)),  
+                "num_smtp_servers": str(ress.number_of_smtp_servers(domain.removeprefix("www."))),
+                "has_ip": str(ress.has_ip(domain))
+            }
+        except Exception as e:
+            basic_features = {
+                "domain": str(domain),
+                "analysis_note": "Limited feature extraction due to domain resolution issues"
+            }
         
-        # Simple heuristic analysis based on domain characteristics
+        # Enhanced heuristic analysis
         suspicious_indicators = 0
+        warning_flags = []
         
         # Check for suspicious domain patterns
-        if len(domain.split('.')) > 3:  # Multiple subdomains
+        if len(domain.split('.')) > 3:
             suspicious_indicators += 1
-        if any(char.isdigit() for char in domain):  # Numbers in domain
-            suspicious_indicators += 1
-        if len(domain) > 30:  # Very long domain
-            suspicious_indicators += 1
-        if any(suspicious in domain.lower() for suspicious in ['login', 'secure', 'bank', 'verify', 'update']):
-            suspicious_indicators += 1
+            warning_flags.append("Multiple subdomains detected")
         
+        if any(char.isdigit() for char in domain):
+            suspicious_indicators += 1
+            warning_flags.append("Numbers in domain name")
+        
+        if len(domain) > 30:
+            suspicious_indicators += 1
+            warning_flags.append("Unusually long domain name")
+        
+        # Check for suspicious keywords
+        phishing_keywords = ['login', 'secure', 'bank', 'verify', 'update', 'account', 'signin', 'auth', 'validation']
+        if any(keyword in domain.lower() for keyword in phishing_keywords):
+            suspicious_indicators += 1
+            warning_flags.append("Contains suspicious keywords")
+        
+        # Check for URL shorteners or suspicious TLDs
+        suspicious_tlds = ['.tk', '.ml', '.ga', '.cf']
+        if any(domain.endswith(tld) for tld in suspicious_tlds):
+            suspicious_indicators += 1
+            warning_flags.append("Uses suspicious top-level domain")
+        
+        risk_level = "HIGH" if suspicious_indicators >= 3 else "MEDIUM" if suspicious_indicators >= 2 else "LOW"
         is_likely_phishing = suspicious_indicators >= 2
         
         return {
-            "result_text": f"⚠️ Limited Analysis (Connection Failed): Based on domain characteristics, this URL appears {'SUSPICIOUS - Potential phishing domain' if is_likely_phishing else 'LEGITIMATE - Domain characteristics look normal'}",
+            "result_text": f"⚠️ LIMITED ANALYSIS (Connection Failed): Risk Level: {risk_level} - {'SUSPICIOUS - Potential phishing indicators detected' if is_likely_phishing else 'APPEARS NORMAL - Domain characteristics look legitimate'}",
             "additional_info": {
                 **basic_features,
-                "analysis_type": "Limited - Connection Failed",
+                "analysis_type": "Domain-Only Analysis",
+                "risk_level": risk_level,
                 "suspicious_indicators": str(suspicious_indicators),
-                "warning": "Full analysis requires website access"
+                "warning_flags": ", ".join(warning_flags) if warning_flags else "None detected",
+                "limitation": "Full analysis requires successful website connection"
             }
         }
     except Exception as e:
         return {
-            "result_text": f"Analysis Failed: Unable to analyze domain due to: {str(e)}",
-            "additional_info": {"error": "Complete analysis failure"}
+            "result_text": f"❌ ANALYSIS FAILED: Unable to analyze domain - {str(e)}",
+            "additional_info": {"error": "Domain analysis completely failed", "error_details": str(e)}
         }
 
 def process_url_input(domain_input):
@@ -181,11 +233,16 @@ def process_url_input(domain_input):
                     "ip_counts": str(ress.get_ip_count(ress._url_domain(cleaned_domain))), 
                     "ssl_update_age(In Days)": str(ress.get_ssl_update_age(ress._url_domain(cleaned_domain))),  
                     "num_smtp_servers": str(ress.number_of_smtp_servers(ress._url_domain(cleaned_domain).removeprefix("www."))),
-                    "analysis_type": "Full Analysis"
+                    "analysis_type": "Full ML Analysis",
+                    "confidence": "High (Website accessible)"
                 }
             except Exception as e:
                 print(f"Error extracting additional info: {str(e)}")
-                additional_info = {"info": "Additional analysis failed", "analysis_type": "Basic Analysis"}
+                additional_info = {
+                    "analysis_type": "Basic ML Analysis", 
+                    "note": "Some additional features unavailable",
+                    "confidence": "Medium"
+                }
             
             return {
                 "result_text": result_text,
@@ -193,17 +250,20 @@ def process_url_input(domain_input):
             }
             
         except ConnectionError as conn_error:
-            print(f"Connection failed, attempting limited analysis: {str(conn_error)}")
-            # Fall back to domain-only analysis
-            return analyze_url_without_connection(domain_input)
+            print(f"Connection failed, performing domain-only analysis: {str(conn_error)}")
+            # Enhanced fallback analysis
+            fallback_result = analyze_url_without_connection(domain_input)
+            # Add connection error details
+            fallback_result["additional_info"]["connection_error"] = str(conn_error)
+            return fallback_result
             
     except ValueError as e:
         return {
-            "result_text": f"❌ ANALYSIS ERROR: {str(e)}",
-            "additional_info": {"error_type": "Validation Error"}
+            "result_text": f"❌ INPUT ERROR: {str(e)}",
+            "additional_info": {"error_type": "Invalid URL Format", "suggestion": "Please check the URL format and try again"}
         }
     except Exception as e:
         return {
             "result_text": f"❌ SYSTEM ERROR: {str(e)}",
-            "additional_info": {"error_type": "System Error"}
+            "additional_info": {"error_type": "System Error", "suggestion": "Please try again or contact support"}
         }
